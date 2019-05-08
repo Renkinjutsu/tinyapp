@@ -11,15 +11,19 @@
 <body style="font-size:20px; padding:50px;">
     <% include ./partials/_header %>
     <!-- Add EJS code here -->
-    
+    <a href='/urls/new'> New URL </a>
     <ul>
-    <% for (let url in urls) { %>
-    <form method= "POST" action ="/urls/9sm5xK/delete">
-    <li><a href='#'> <%= url %> - <%= urls[url] %> </a></li>
-    <input type='hidden' id='shortURL' name='shortURL' value = '<%= url %>' />
-    <button type='submit'> delete </button>
-    <% }; %>
-    </form>
+      <% for (let url in urls) { %>
+        <li><a href='#'> <%= url %> - <%= urls[url] %> </a></li>
+        <form method= "POST" action ="/urls/<%= url %>/delete">
+          <input type='hidden' id='shortURL' name='shortURL' value = '<%= url %>' />
+          <button type='submit'> delete </button>
+        </form>
+        <form method= "GET" action ="/urls/<%= url %>">
+            <input type='hidden' id='shortURL' name='shortURL' value = '<%= url %>' />
+            <button type='submit'> edit </button>
+          </form>
+      <% }; %>
     </ul>
     
     

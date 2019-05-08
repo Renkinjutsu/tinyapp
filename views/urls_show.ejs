@@ -12,7 +12,12 @@
 <% include ./partials/_header %>
     <!-- Add EJS code here -->
     <h2> Your URLs </h2>
-    <p><a href='#'> <%= shortURL %> - <%= longURL%> </a></p>
-
+    <p><a href='#'> <%= shortURL %> - <%= longURL %> </a></p>
+    <form method='POST' action='/urls/<%= shortURL %>'>
+      <label for='longURL'> URL: </label>
+      <input type='text' id='longURL' name='newURL'  placeholder='http://...'>
+      <button type='submit'> Edit URL </button>
+    </form>
+    <a href='/urls'> Back to index </a>
 </body>
 </html> 
