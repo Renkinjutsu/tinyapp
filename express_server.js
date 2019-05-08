@@ -9,8 +9,22 @@ var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+
+function generateRandomString() {
+  let random = '';
+  for (let i of [1,2,3,4,5,6]) {
+    let num = Math.floor(Math.random() * 99999999)
+    let a = num.toString(36)
+    random += a[1];
+  }
+  return random;
+} 
+
+
+
 // index page
 app.get('/', function(req, res) {
+  
   var drinks = [
       { name: 'Bloody Mary', drunkness: 3 },
       { name: 'Martini', drunkness: 5 },
@@ -25,7 +39,6 @@ app.get('/', function(req, res) {
 });
 
 
-
 // about page
 app.get('/about', function(req, res) {
     res.render('pages/about');
@@ -33,12 +46,17 @@ app.get('/about', function(req, res) {
 
 // url index
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase };
 
-  console.log(templateVars);
+  let templateVars = { urls: urlDatabase };
   res.render('urls_index', templateVars);
 });
 
+app.post('/urls', (req, res) => {
+  console.log(req.body);
+  res.send('Thanks!')
+})
+
+// url shortener
 app.get('/urls/new', (req, res) => {
   res.render('urls_new');
 });
