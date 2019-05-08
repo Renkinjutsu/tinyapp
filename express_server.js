@@ -46,14 +46,18 @@ app.get('/about', function(req, res) {
 
 // url index
 app.get("/urls", (req, res) => {
-
   let templateVars = { urls: urlDatabase };
   res.render('urls_index', templateVars);
 });
 
 app.post('/urls', (req, res) => {
-  console.log(req.body);
-  res.send('Thanks!')
+  console.log(req);
+  console.log(req.statusCode)
+  let newShortUrl = generateRandomString()
+  if (req.body) {
+    urlDatabase[newShortUrl] = `${req.body.longURL}`
+  }
+  res.redirect(`/urls/${newShortUrl}`)
 })
 
 // url shortener
