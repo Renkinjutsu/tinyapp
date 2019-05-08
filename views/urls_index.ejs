@@ -13,14 +13,14 @@
     <!-- Add EJS code here -->
     <a href='/urls/new'> New URL </a>
     <ul>
-      <% for (let url in urls) { %>
-        <li><a href='#'> <%= url %> - <%= urls[url] %> </a></li>
-        <form method= "POST" action ="/urls/<%= url %>/delete">
-          <input type='hidden' id='shortURL' name='shortURL' value = '<%= url %>' />
+      <% for (let users in urls) { %>
+        <li><a href='#'> <%= users %> - <%= urls[users] %> </a></li>
+        <form method= "POST" action ="/urls/<%= users %>/delete">
+          <input type='hidden' id='shortURL' name='shortURL' value = '<%= users %>' />
           <button type='submit'> delete </button>
         </form>
-        <form method= "GET" action ="/urls/<%= url %>">
-            <input type='hidden' id='shortURL' name='shortURL' value = '<%= url %>' />
+        <form method= "GET" action ="/urls/<%= users %>">
+            <input type='hidden' id='shortURL' name='shortURL' value = '<%= users %>' />
             <button type='submit'> edit </button>
           </form>
       <% }; %>

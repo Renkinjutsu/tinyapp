@@ -2,8 +2,10 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const PORT = 8080; // default port 8080
+const cookieParser = require('cookie-parser');
 app.set('view engine', 'ejs'); //set the view engine to ejs
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser());
 
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -60,9 +62,19 @@ app.post('/urls', (req, res) =>
 {
   let newShortUrl = generateRandomString()
   if (req.body) {
-    urlDatabase[newShortUrl] = req.body.longURL
+    urlDatabase[newShortUrl] = req.body.longURL;
   }
   res.redirect(`/urls/${newShortUrl}`)
+})
+
+// login page
+app.post('/login', (req, res) =>
+{
+  console.log(req.body.username)
+  const userName = req.body.username;
+  res.cookie('username', userName).send('cookie set');
+  res.redirect('/urls')
+  return;
 })
 
 // create new short url 
@@ -73,13 +85,15 @@ app.get('/urls/new', (req, res) =>
 
 app.get("/u/:shortURL", (req, res) => 
 {
-  res.redirect(urlDatabase[req.params.shortURL])
+  const urlDatabaseURL = urlDatabase[req.params.shortURL]
+  res.redirect(urlDatabaseURL)
 });
 
 // Deleting using short url
 app.post('/urls/:shortURL/delete', (req, res) => 
 {
-  delete urlDatabase[req.params.shortURL]
+  const databaseKey = urlDatabase[req.params.shortURL]
+  delete databaseKey
   res.redirect('/urls')
 });
 
@@ -99,11 +113,6 @@ app.get("/urls/:shortURL", (req, res) =>
   res.render("urls_show", templateVars);
 });
 
-// hello demo
-app.get("/hello", (req, res) => 
-{
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
-});
 
 app.listen(PORT, () => 
 {
