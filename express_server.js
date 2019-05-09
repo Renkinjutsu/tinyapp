@@ -52,6 +52,14 @@ const returnId = function(email, password)
 app.get('/', function(req, res) 
 {
 //  if logged in send to index, if not send to login
+console.log(req.cookies.userId)
+  if (req.cookies.userId) 
+  {
+    res.redirect('/urls')
+  } else 
+  {
+    res.redirect('/login')
+  }
 });
 
 
@@ -62,10 +70,16 @@ app.get('/login', (req,res) =>
 })
 app.post('/login', (req, res) =>
 {
-  // need to verify login and password and send user cookie
   const user = req.body.email;
   const password = req.body.password;
   const uid = returnId(user, password);
+  if (uid) 
+  {
+    res.cookie('userId', uid)
+    res.redirect('/urls')
+  } else {
+    res.send('403: Please login or register')
+  }
   // const userName = req.body.username; //user id instead
   res.cookie('userId', uid)
   res.redirect('/urls')
