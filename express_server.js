@@ -114,7 +114,7 @@ app.post('/register', (req, res) =>
   const uid = generateRandomString();
   // console.log('this should be false: ', !(user && password) )
   // console.log('also false: ', !returnId(user, password))
-  if (!(user && password)) 
+  if (!user || !password) 
   {
     res.send('400\nPlease entire valid email and password')
   } else if (returnId(user, password)) 
