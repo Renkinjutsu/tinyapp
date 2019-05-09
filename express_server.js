@@ -58,7 +58,6 @@ const urlsForUser = function(id)
   }
   return newDatabase;
 } 
-console.log(urlsForUser('unique'))
 
 // ROOT page
 app.get('/', function(req, res) 
@@ -138,7 +137,6 @@ app.post('/register', (req, res) =>
 // url INDEX
 app.get('/urls', (req, res) => 
 {
-  console.log(urlsForUser('unique'))
   const userId = req.cookies['userId'];
   const userObj = users[userId];
   let templateVars = 
@@ -160,7 +158,6 @@ app.post('/urls', (req, res) =>
       userId: userId
     }
   }
-  console.log(urlDatabase)
   res.redirect(`/urls/${newShortUrl}`)
 })
 
@@ -217,15 +214,23 @@ app.get("/urls/:shortURL", (req, res) =>
 // Deleting url route
 app.post('/urls/:shortURL/delete', (req, res) => 
 {
-  const databaseKey = urlDatabase[req.params.shortURL]
-  delete databaseKey
+  const userId = req.cookies['userId'];
+  const databaseKey = req.params.shortURL
+  if (urlDatabase[databaseKey].userId === userId) 
+  {
+  delete urlDatabase[databaseKey]
   res.redirect('/urls')
+  } else 
+  {
+    throw new Error('UNAUTHORIZE ACTIVITY')
+  }
+ 
 });
 
 // REDIRECT EXTERNAL url
 app.get("/u/:shortURL", (req, res) => 
 {
-  const urlDatabaseURL = urlDatabase[req.params.shortURL]
+  const urlDatabaseURL = urlDatabase[req.params.shortURL].longURL
   res.redirect(urlDatabaseURL)
 });
 
