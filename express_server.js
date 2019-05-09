@@ -46,7 +46,19 @@ const returnId = function(email, password)
   return false;
 }
 
-
+const urlsForUser = function(id)
+{
+  const newDatabase = {}
+  for (let short in urlDatabase) 
+  {
+    if (urlDatabase[short].userId === id) 
+    {
+      newDatabase[short] = urlDatabase[short]
+    }
+  }
+  return newDatabase;
+} 
+console.log(urlsForUser('unique'))
 
 // ROOT page
 app.get('/', function(req, res) 
@@ -126,12 +138,13 @@ app.post('/register', (req, res) =>
 // url INDEX
 app.get('/urls', (req, res) => 
 {
+  console.log(urlsForUser('unique'))
   const userId = req.cookies['userId'];
   const userObj = users[userId];
   let templateVars = 
   { 
     user: userObj,
-    urls: urlDatabase
+    urls: urlsForUser(userId)
   };
   res.render('urls_index', templateVars);
 });
