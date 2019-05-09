@@ -11,15 +11,15 @@ const users =
 {
   'unique': 
   {
-    id: 'test',
+    id: 'unique',
     email: 'test@test.com',
     password: 'test'
   }
 }
 const urlDatabase = 
 {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": {longURL: "http://www.lighthouselabs.ca", userId: 'unique'},
+  "9sm5xK": {longURL: "http://www.google.com", userId: 'unique'}
 };
 
 const generateRandomString = function() 
@@ -51,7 +51,6 @@ const returnId = function(email, password)
 // ROOT page
 app.get('/', function(req, res) 
 {
-console.log(req.cookies.userId)
   if (req.cookies.userId) 
   {
     res.redirect('/urls')
@@ -127,9 +126,8 @@ app.post('/register', (req, res) =>
 // url INDEX
 app.get('/urls', (req, res) => 
 {
-  const userId = req.cookies['userId']; //change to user id
+  const userId = req.cookies['userId'];
   const userObj = users[userId];
-  
   let templateVars = 
   { 
     user: userObj,
@@ -151,7 +149,21 @@ app.post('/urls', (req, res) =>
 // create NEW short url 
 app.get('/urls/new', (req, res) => 
 {
-  res.render('urls_new');
+  const userId = req.cookies['userId'];
+  const userObj = users[userId];
+  let templateVars = 
+  { 
+    user: userObj,
+    urls: urlDatabase
+  };
+
+  if (userId) 
+  {
+  res.render('urls_new', templateVars);
+  } else 
+  {
+    res.redirect('/login');
+  }
 });
 
 // REDIRECT EXTERNAL url
