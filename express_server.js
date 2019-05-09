@@ -1,83 +1,126 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const PORT = 8080; // default port 8080
+const PORT = 8080;
 const cookieParser = require('cookie-parser');
-app.set('view engine', 'ejs'); //set the view engine to ejs
+app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
-var urlDatabase = {
+const users = 
+{
+  'unique': 
+  {
+    id: 'test',
+    email: 'test@test.com',
+    password: 'test'
+  }
+}
+const urlDatabase = 
+{
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
 
-function generateRandomString() 
+const generateRandomString = function() 
 {
   let random = '';
-  for (let i of [1,2,3,4,5,6]) {
+  for (let i of [1,2,3,4,5,6]) 
+  {
     let num = Math.floor(Math.random() * 99999999)
     let a = num.toString(36)
     random += a[1];
   }
   return random;
-} 
+}; 
+
+const returnId = function(email, password)
+{
+  for (let uid in users) 
+  {
+    if (users[uid].email === email && users[uid].password === password)
+    {
+      return uid;
+    } 
+  }
+  return false;
+}
 
 
 
 // index page
 app.get('/', function(req, res) 
 {
-  var drinks = 
-  [
-      { name: 'Bloody Mary', drunkness: 3 },
-      { name: 'Martini', drunkness: 5 },
-      { name: 'Scotch', drunkness: 10 }
-  ];
-
-  var tagline = "Any code of your own that you haven't looked at for six or more months might as well have been written by someone else.";
-
-  res.render('pages/index', 
-  {
-      drinks: drinks,
-      tagline: tagline
-  })
+//  if logged in send to index, if not send to login
 });
 
 
-// about page
-app.get('/about', function(req, res) 
+// LOGIN header route
+app.get('/login', (req,res) =>
 {
-    res.render('pages/about');
-});
-
-// login page
+  res.render('login');
+})
 app.post('/login', (req, res) =>
 {
-  const userName = req.body.username;
-  res.cookie('username', userName)
+  // need to verify login and password and send user cookie
+  const user = req.body.email;
+  const password = req.body.password;
+  const uid = returnId(user, password);
+  // const userName = req.body.username; //user id instead
+  res.cookie('userId', uid)
   res.redirect('/urls')
 })
 
-// logout
+// LOGOUT route
 app.post('/logout', (req, res) =>
 {
   const userName = req.body.username
   res.clearCookie('username')
- 
   res.redirect('/urls')
-}
-)
+})
 
-// url index
-app.get("/urls", (req, res) => 
+// REGISTER page
+app.get('/register', (req, res) =>
 {
-  const username = req.cookies['username'];
+  res.render('register');
+});
+app.post('/register', (req, res) =>
+{
+  const user = req.body.email;
+  const password = req.body.password;
+  const uid = generateRandomString();
+  // console.log('this should be false: ', !(user && password) )
+  // console.log('also false: ', !returnId(user, password))
+  if (!(user && password)) 
+  {
+    res.send('400\nPlease entire valid email and password')
+  } else if (returnId(user, password)) 
+  {
+    // redirect to login
+  } else 
+  {
+    users[uid] = 
+    {
+      id: uid,
+      email: user,
+      password: password
+    };
+    console.log(users)
+    res.redirect('/urls');
+  }
+});
+
+
+// url INDEX
+app.get('/urls', (req, res) => 
+{
+  const username = req.cookies['username']; //change to user id
   
   let templateVars = 
   { 
-    urls: urlDatabase,
-    username: username
+    username: username,
+    userId: 'input user',
+    urls: urlDatabase
   };
   res.render('urls_index', templateVars);
 });
@@ -92,19 +135,20 @@ app.post('/urls', (req, res) =>
 })
 
 
-// create new short url 
+// create NEW short url 
 app.get('/urls/new', (req, res) => 
 {
   res.render('urls_new');
 });
 
+// REDIRECT EXTERNAL url
 app.get("/u/:shortURL", (req, res) => 
 {
   const urlDatabaseURL = urlDatabase[req.params.shortURL]
   res.redirect(urlDatabaseURL)
 });
 
-// Deleting using short url
+// Deleting url route
 app.post('/urls/:shortURL/delete', (req, res) => 
 {
   const databaseKey = urlDatabase[req.params.shortURL]
@@ -120,6 +164,7 @@ app.post('/urls/:shortURL', (req, res) => {
   res.redirect('/urls');
 });
 
+// Render UNIQUE shorturl
 app.get("/urls/:shortURL", (req, res) => 
 {
   const short = req.params.shortURL
