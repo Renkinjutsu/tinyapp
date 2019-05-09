@@ -138,10 +138,16 @@ app.get('/urls', (req, res) =>
 
 app.post('/urls', (req, res) => 
 {
-  let newShortUrl = generateRandomString()
+  const newShortUrl = generateRandomString();
+  const userId = req.cookies['userId'];
   if (req.body) {
-    urlDatabase[newShortUrl] = req.body.longURL;
+    urlDatabase[newShortUrl] = 
+    {
+      longURL: req.body.longURL,
+      userID: userId
+    }
   }
+  // console.log(urlDatabase) TEST
   res.redirect(`/urls/${newShortUrl}`)
 })
 
@@ -193,8 +199,15 @@ app.post('/urls/:shortURL', (req, res) => {
 app.get("/urls/:shortURL", (req, res) => 
 {
   const short = req.params.shortURL
-  const long = urlDatabase[req.params.shortURL]
-  const templateVars = { shortURL: short, longURL: long};
+  const long = urlDatabase[req.params.shortURL].longURL
+  const userId = req.cookies['userId'];
+  const userObj = users[userId];
+  let templateVars = 
+  { 
+    user: userObj,
+    shortURL: short,
+    longURL: long
+  };
   res.render("urls_show", templateVars);
 });
 
