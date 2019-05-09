@@ -51,10 +51,34 @@ app.get('/about', function(req, res)
     res.render('pages/about');
 });
 
+// login page
+app.post('/login', (req, res) =>
+{
+  const userName = req.body.username;
+  res.cookie('username', userName)
+  res.redirect('/urls')
+})
+
+// logout
+app.post('/logout', (req, res) =>
+{
+  const userName = req.body.username
+  res.clearCookie('username')
+ 
+  res.redirect('/urls')
+}
+)
+
 // url index
 app.get("/urls", (req, res) => 
 {
-  let templateVars = { urls: urlDatabase };
+  const username = req.cookies['username'];
+  
+  let templateVars = 
+  { 
+    urls: urlDatabase,
+    username: username
+  };
   res.render('urls_index', templateVars);
 });
 
@@ -67,15 +91,6 @@ app.post('/urls', (req, res) =>
   res.redirect(`/urls/${newShortUrl}`)
 })
 
-// login page
-app.post('/login', (req, res) =>
-{
-  console.log(req.body.username)
-  const userName = req.body.username;
-  res.cookie('username', userName).send('cookie set');
-  res.redirect('/urls')
-  return;
-})
 
 // create new short url 
 app.get('/urls/new', (req, res) => 

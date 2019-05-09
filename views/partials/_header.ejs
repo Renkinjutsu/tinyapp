@@ -1,7 +1,18 @@
 <!-- views/partials/header.ejs -->
 <h1> Tiny app </h1>
+<% if (!username) { %>
 <h2>
-<form method='POST' action='/login'>
-<input type='text' id='username' name='username' placeholder='username'>
-<button type='submit'> login </button>
+    <form method='POST' action='/login'>
+    <input type='text' id='username' name='username' placeholder='username'>
+    <button type='submit'> login </button>
+    </form>
+</h2>
+<% } else { %>
+<h2> Logged in as TinyApp User! </h2>
+<h3> <%= username %>
+ <form method='POST' action='/logout'>
+    <input type='hidden' id='username' name='username' value='<%= username %>'>
+    <button type='submit'> logout </button>
 </form>
+</h3>
+<% }; %>
