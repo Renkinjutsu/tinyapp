@@ -11,7 +11,7 @@
 <body style="font-size:20px; padding:50px;">
 <% include ./partials/_header %>
     <!-- Add EJS code here -->
-    <h2> Your URLs </h2>
+    <h2> Your URL </h2>
     <p><a href='#'> <%= shortURL %> - <%= longURL %> </a></p>
     <form method='POST' action='/urls/<%= shortURL %>'>
       <label for='longURL'> URL: </label>

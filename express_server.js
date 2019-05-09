@@ -187,7 +187,7 @@ app.post('/urls/:shortURL/delete', (req, res) =>
   res.redirect('/urls')
 });
 
-// url/shortURL 
+// url/shortURL posted from url show
 app.post('/urls/:shortURL', (req, res) => {
   const id = req.params.shortURL;
   const newLongURL = req.body.newURL;
