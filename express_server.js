@@ -117,7 +117,7 @@ app.post('/register', (req, res) =>
       email: user,
       password: password
     };
-    console.log(users)
+    res.cookie('userId', uid)
     res.redirect('/urls');
   }
 });
@@ -144,10 +144,10 @@ app.post('/urls', (req, res) =>
     urlDatabase[newShortUrl] = 
     {
       longURL: req.body.longURL,
-      userID: userId
+      userId: userId
     }
   }
-  // console.log(urlDatabase) TEST
+  console.log(urlDatabase)
   res.redirect(`/urls/${newShortUrl}`)
 })
 

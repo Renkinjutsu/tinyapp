@@ -11,9 +11,13 @@
 <body style="font-size:20px; padding:50px;">
     <% include ./partials/_header %>
     <!-- Add EJS code here -->
+    <% if (!user) { %>
+    <h2> Please login </h2>
+    <% } else { %>
     <a href='/urls/new'> New URL </a>
     <ul>
       <% for (let users in urls) { %>
+      <% if (urls[users].userId === user.id) { %>
         <li><a href='#'> <%= users %> - <%= urls[users].longURL %> </a></li>
         <form method= "POST" action ="/urls/<%= users %>/delete">
           <input type='hidden' id='shortURL' name='shortURL' value = '<%= users %>' />
@@ -23,7 +27,7 @@
             <input type='hidden' id='shortURL' name='shortURL' value = '<%= users %>' />
             <button type='submit'> edit </button>
           </form>
-      <% }; %>
+      <% }}}; %>
     </ul>
     
     
