@@ -48,10 +48,9 @@ const returnId = function(email, password)
 
 
 
-// index page
+// ROOT page
 app.get('/', function(req, res) 
 {
-//  if logged in send to index, if not send to login
 console.log(req.cookies.userId)
   if (req.cookies.userId) 
   {
@@ -61,9 +60,9 @@ console.log(req.cookies.userId)
     res.redirect('/login')
   }
 });
+// GUCCI
 
-
-// LOGIN header route
+// LOGIN PAGE
 app.get('/login', (req,res) =>
 {
   res.render('login');
@@ -127,12 +126,12 @@ app.post('/register', (req, res) =>
 // url INDEX
 app.get('/urls', (req, res) => 
 {
-  const username = req.cookies['username']; //change to user id
+  const userId = req.cookies['userId']; //change to user id
+  const userObj = users[userId];
   
   let templateVars = 
   { 
-    username: username,
-    userId: 'input user',
+    user: userObj,
     urls: urlDatabase
   };
   res.render('urls_index', templateVars);
