@@ -96,6 +96,7 @@ app.get('/register', (req, res) =>
 {
   res.render('register');
 });
+
 app.post('/register', (req, res) =>
 {
   const user = req.body.email;
@@ -108,7 +109,7 @@ app.post('/register', (req, res) =>
     res.send('400\nPlease entire valid email and password')
   } else if (returnId(user, password)) 
   {
-    // redirect to login
+    res.redirect('/login')
   } else 
   {
     users[uid] = 
