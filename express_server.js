@@ -165,42 +165,26 @@ app.post('/urls', (req, res) =>
 })
 
 
-// create NEW short url 
+// page to create NEW short url 
 app.get('/urls/new', (req, res) => 
 {
   const userId = req.cookies['userId'];
-  const userObj = users[userId];
-  let templateVars = 
-  { 
-    user: userObj,
-    urls: urlDatabase
-  };
-
-  if (userId) 
-  {
-  res.render('urls_new', templateVars);
-  } else 
+  if (!userId) 
   {
     res.redirect('/login');
+  } else
+  {
+    const userObj = users[userId];
+    let templateVars = 
+    { 
+      user: userObj,
+      urls: urlDatabase
+    };
+  res.render('urls_new', templateVars);
   }
 });
 
-// REDIRECT EXTERNAL url
-app.get("/u/:shortURL", (req, res) => 
-{
-  const urlDatabaseURL = urlDatabase[req.params.shortURL]
-  res.redirect(urlDatabaseURL)
-});
-
-// Deleting url route
-app.post('/urls/:shortURL/delete', (req, res) => 
-{
-  const databaseKey = urlDatabase[req.params.shortURL]
-  delete databaseKey
-  res.redirect('/urls')
-});
-
-// url/shortURL posted from url show
+// url/shortURL EDIT from url show
 app.post('/urls/:shortURL', (req, res) => {
   const id = req.params.shortURL;
   const newLongURL = req.body.newURL;
@@ -211,19 +195,39 @@ app.post('/urls/:shortURL', (req, res) => {
 // Render UNIQUE shorturl
 app.get("/urls/:shortURL", (req, res) => 
 {
-  const short = req.params.shortURL
-  const long = urlDatabase[req.params.shortURL].longURL
   const userId = req.cookies['userId'];
-  const userObj = users[userId];
-  let templateVars = 
-  { 
-    user: userObj,
-    shortURL: short,
-    longURL: long
-  };
-  res.render("urls_show", templateVars);
+  if (!userId) 
+  {
+    res.send('403: Please login')
+  } else
+  {
+    const short = req.params.shortURL
+    const long = urlDatabase[req.params.shortURL].longURL
+    const userObj = users[userId];
+    let templateVars = 
+    { 
+      user: userObj,
+      shortURL: short,
+      longURL: long
+    };
+    res.render("urls_show", templateVars);
+  }
 });
 
+// Deleting url route
+app.post('/urls/:shortURL/delete', (req, res) => 
+{
+  const databaseKey = urlDatabase[req.params.shortURL]
+  delete databaseKey
+  res.redirect('/urls')
+});
+
+// REDIRECT EXTERNAL url
+app.get("/u/:shortURL", (req, res) => 
+{
+  const urlDatabaseURL = urlDatabase[req.params.shortURL]
+  res.redirect(urlDatabaseURL)
+});
 
 app.listen(PORT, () => 
 {
