@@ -88,8 +88,7 @@ app.post('/login', (req, res) =>
 // LOGOUT route
 app.post('/logout', (req, res) =>
 {
-  const userName = req.body.username
-  res.clearCookie('username')
+  res.clearCookie('userId')
   res.redirect('/urls')
 })
 
