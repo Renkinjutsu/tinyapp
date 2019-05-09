@@ -3,6 +3,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const PORT = 8080;
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
@@ -13,7 +14,7 @@ const users =
   {
     id: 'unique',
     email: 'test@test.com',
-    password: 'test'
+    password: '$2b$10$fsNcpseHrq05MEMkKZxFxu8weqldggJoPuv4x4PAT76BmIh5VHBEK'
   }
 }
 const urlDatabase = 
@@ -38,7 +39,7 @@ const returnId = function(email, password)
 {
   for (let uid in users) 
   {
-    if (users[uid].email === email && users[uid].password === password)
+    if (users[uid].email === email && bcrypt.compareSync(password, users[uid].password))
     {
       return uid;
     } 
@@ -110,7 +111,8 @@ app.get('/register', (req, res) =>
 app.post('/register', (req, res) =>
 {
   const user = req.body.email;
-  const password = req.body.password;
+  const password = bcrypt.hashSync(req.body.password, 10);
+  console.log(password);
   const uid = generateRandomString();
   // console.log('this should be false: ', !(user && password) )
   // console.log('also false: ', !returnId(user, password))
