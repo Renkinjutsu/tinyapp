@@ -24,8 +24,20 @@ const users =
 }
 const urlDatabase = 
 {
-  "b2xVn2": {longURL: "http://www.lighthouselabs.ca", userId: 'unique', date: `${new Date()}`},
-  "9sm5xK": {longURL: "http://www.google.com", userId: 'unique', date: `${new Date()}`}
+  "b2xVn2": 
+  {
+    longURL: "http://www.lighthouselabs.ca", 
+    userId: 'unique', 
+    date: new Date().toString(),
+    visits: [0, {'unique': new Date()}] 
+  },
+  "9sm5xK": 
+  {
+    longURL: "http://www.google.com", 
+    userId: 'unique', 
+    date: new Date().toString(),
+    visits: [0, {'unique': new Date()}] 
+  }
 };
 
 const generateRandomString = function() 
@@ -65,6 +77,33 @@ const urlsForUser = function(id)
   return newDatabase;
 } 
 
+// counting function
+let count = 0 
+const countOne = function() {
+  return count++;
+}
+
+// looping function to add visitors to database
+const addVisitor = function(visitor, database, shortURL) 
+{
+  let persons = urlDatabase[shortURL].visits[1]
+  let match = false
+  for (let id in persons)
+  {
+    console.log("this is the database: ", id)
+    console.log("this is the anon visitor: ", visitor)
+
+    if (id === visitor)
+    {
+      match = true;
+    }
+  }
+  if (!match) 
+  {
+    urlDatabase[shortURL].visits[1][visitor] = new Date()
+  }
+  console.log(urlDatabase[shortURL].visits[1])
+}
 // ROOT page
 app.get('/', function(req, res) 
 {
@@ -226,6 +265,7 @@ app.post('/urls/:shortURL', (req, res) => {
 app.get("/urls/:shortURL", (req, res) => 
 {
   const userId = req.session.userId;
+  console.log('cookies?', req.session.json)
   if (!userId) 
   {
     res.redirect('/error')
@@ -240,8 +280,19 @@ app.get("/urls/:shortURL", (req, res) =>
       user: userObj,
       shortURL: short,
       longURL: long,
-      date: date.toString()
+      date: date.toString(),
+      visits:  urlDatabase[short].visits
+
     };
+
+    // logging visits
+    // access urldatabase visits
+    console.log(urlDatabase[short].visits);
+    
+    // log unique visit + date
+    console.log('true then false', req.session.views)
+
+    req.session.views = 'new';
     res.render("urls_show", templateVars);
   }
 });
@@ -265,8 +316,22 @@ app.post('/urls/:shortURL/delete', (req, res) =>
 // REDIRECT EXTERNAL url
 app.get("/u/:shortURL", (req, res) => 
 {
-  if (urlDatabase[req.params.shortURL]) {
-  let urlDatabaseURL = urlDatabase[req.params.shortURL].longURL
+  let userId = req.session.userId;
+  const short = req.params.shortURL
+  let urlDatabaseURL = urlDatabase[short].longURL
+  console.log(urlDatabase[short].visits)
+  console.log(urlDatabase[short].visits[1])
+  if (!userId) {
+    userId = `anon${countOne()}`
+    urlDatabase[short].visits[0] += 1;
+    addVisitor(userId, urlDatabase, short)
+    console.log(userId)
+    res.redirect(urlDatabaseURL)
+  } else if (urlDatabase[short]) 
+  {
+  urlDatabase[short].visits[0] += 1; //increase visits
+  addVisitor(userId, urlDatabase, short)
+  console.log('should increase', urlDatabase[short].visits);
   res.redirect(urlDatabaseURL)
   } else 
   {
