@@ -7,7 +7,7 @@ const cookieSession = require('cookie-session');
 app.use(cookieSession
 ({
   name: 'session',
-  keys: ['lighthouse'],
+  keys: ['lighthouse']
 }));
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
@@ -24,8 +24,8 @@ const users =
 }
 const urlDatabase = 
 {
-  "b2xVn2": {longURL: "http://www.lighthouselabs.ca", userId: 'unique'},
-  "9sm5xK": {longURL: "http://www.google.com", userId: 'unique'}
+  "b2xVn2": {longURL: "http://www.lighthouselabs.ca", userId: 'unique', date: `${new Date()}`},
+  "9sm5xK": {longURL: "http://www.google.com", userId: 'unique', date: `${new Date()}`}
 };
 
 const generateRandomString = function() 
@@ -101,7 +101,8 @@ app.post('/login', (req, res) =>
     console.log(uid)
     req.session.userId = uid
     res.redirect('/urls')
-  } else {
+  } else 
+  {
     res.redirect('/error')
   }
 })
@@ -145,7 +146,6 @@ app.post('/register', (req, res) =>
     res.redirect('/login')
   } else 
   {
-    console.log('this shouldnt happen')
     users[uid] = 
     {
       id: uid,
@@ -179,9 +179,11 @@ app.post('/urls', (req, res) =>
     urlDatabase[newShortUrl] = 
     {
       longURL: req.body.longURL,
-      userId: userId
+      userId: userId,
+      date: new Date()
     }
   }
+  console.log(urlDatabase)
   res.redirect(`/urls/${newShortUrl}`)
 })
 
@@ -231,12 +233,14 @@ app.get("/urls/:shortURL", (req, res) =>
   {
     const short = req.params.shortURL
     const long = urlDatabase[req.params.shortURL].longURL
+    const date = urlDatabase[req.params.shortURL].date
     const userObj = users[userId];
     let templateVars = 
     { 
       user: userObj,
       shortURL: short,
-      longURL: long
+      longURL: long,
+      date: date.toString()
     };
     res.render("urls_show", templateVars);
   }
@@ -264,7 +268,8 @@ app.get("/u/:shortURL", (req, res) =>
   if (urlDatabase[req.params.shortURL]) {
   let urlDatabaseURL = urlDatabase[req.params.shortURL].longURL
   res.redirect(urlDatabaseURL)
-  } else {
+  } else 
+  {
     res.send('404: Link or page not found')
   }
 });
