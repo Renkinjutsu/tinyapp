@@ -82,22 +82,28 @@ app.get('/', function(req, res)
 // LOGIN PAGE
 app.get('/login', (req,res) =>
 {
-  res.render('login');
+  if (req.session.userId) 
+  {
+    res.redirect('/urls')
+  } else 
+  {
+    res.render('login');
+  }
 })
 app.post('/login', (req, res) =>
 {
   const user = req.body.email;
   const password = req.body.password;
   const uid = returnId(user, password);
+  console.log(returnId(user, password))
   if (uid) 
   {
+    console.log(uid)
     req.session.userId = uid
     res.redirect('/urls')
   } else {
-    res.send('403: Please login or register')
+    res.redirect('/error')
   }
-  // const userName = req.body.username; //user id instead
-  res.redirect('/urls')
 })
 
 // LOGOUT route
@@ -107,28 +113,39 @@ app.post('/logout', (req, res) =>
   res.redirect('/urls')
 })
 
+// Login Error page
+app.get('/error', (req, res) =>
+{
+  res.render('error')
+})
+
 // REGISTER page
 app.get('/register', (req, res) =>
 {
+  if (req.session.userId) 
+  {
+    res.redirect('/urls')
+  } else
+  {
   res.render('register');
+  }
 });
 
 app.post('/register', (req, res) =>
 {
   const user = req.body.email;
   const password = bcrypt.hashSync(req.body.password, 10);
-  console.log(password);
   const uid = generateRandomString();
-  // console.log('this should be false: ', !(user && password) )
-  // console.log('also false: ', !returnId(user, password))
+  console.log(returnId(user, password))
   if (!user || !password) 
   {
-    res.send('400\nPlease entire valid email and password')
-  } else if (returnId(user, password)) 
+    res.redirect('/error')
+  } else if (returnId(user, req.body.password)) 
   {
     res.redirect('/login')
   } else 
   {
+    console.log('this shouldnt happen')
     users[uid] = 
     {
       id: uid,
@@ -199,7 +216,7 @@ app.post('/urls/:shortURL', (req, res) => {
   res.redirect('/urls');
   } else
   {
-    res.send('You must login to edit URLs')
+    res.redirect('/error')
   }
 });
 
@@ -209,7 +226,7 @@ app.get("/urls/:shortURL", (req, res) =>
   const userId = req.session.userId;
   if (!userId) 
   {
-    res.send('403: Please login')
+    res.redirect('/error')
   } else
   {
     const short = req.params.shortURL
@@ -236,7 +253,7 @@ app.post('/urls/:shortURL/delete', (req, res) =>
   res.redirect('/urls')
   } else 
   {
-    throw new Error('UNAUTHORIZE ACTIVITY')
+    res.redirect('/error')
   }
  
 });
@@ -244,9 +261,19 @@ app.post('/urls/:shortURL/delete', (req, res) =>
 // REDIRECT EXTERNAL url
 app.get("/u/:shortURL", (req, res) => 
 {
-  const urlDatabaseURL = urlDatabase[req.params.shortURL].longURL
+  if (urlDatabase[req.params.shortURL]) {
+  let urlDatabaseURL = urlDatabase[req.params.shortURL].longURL
   res.redirect(urlDatabaseURL)
+  } else {
+    res.send('404: Link or page not found')
+  }
 });
+
+// arbitrary page
+app.get('/:anythingelse', (req, res) =>
+{
+  res.redirect('/error')
+})
 
 app.listen(PORT, () => 
 {

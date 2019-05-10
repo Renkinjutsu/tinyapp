@@ -8,13 +8,14 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
   <title>TinyApp</title>
 </head>
-
 <body style="font-size:20px; padding:50px;">
-    <h2> Login Here! </h2>
-    <form method='POST' action='login'>
-        <input type='email' name='email' placeholder='email' />
-        <input type='password' name='password' placeholder='password' />
-        <button type='submit'> Login </button>
+    <h2> Error: Unauthorized Activity </h2>
+    <h3> Please login or register </h2>
+    <form method='GET' action='/login'>
+        <input type='submit' class='btn btn-primary' value='Login'>
+    </form>
+    <form method='GET' action='/register'>
+        <input type='submit' class='btn btn-primary' value='Register' />
     </form>
 </body>
 </html>
