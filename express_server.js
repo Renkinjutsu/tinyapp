@@ -192,6 +192,7 @@ app.post('/register', (req, res) =>
       password: password
     };
     req.session.userId = uid
+    console.log(users);
     res.redirect('/urls');
   }
 });
@@ -281,8 +282,9 @@ app.get("/urls/:shortURL", (req, res) =>
       shortURL: short,
       longURL: long,
       date: date.toString(),
-      visits:  urlDatabase[short].visits
-
+      visits:  urlDatabase[short].visits,
+      uniqueVisits: Object.keys(urlDatabase[short].visits[1]).length,
+      visitObj: urlDatabase[short].visits[1]
     };
 
     // logging visits
@@ -317,21 +319,19 @@ app.post('/urls/:shortURL/delete', (req, res) =>
 app.get("/u/:shortURL", (req, res) => 
 {
   let userId = req.session.userId;
-  const short = req.params.shortURL
-  let urlDatabaseURL = urlDatabase[short].longURL
-  console.log(urlDatabase[short].visits)
-  console.log(urlDatabase[short].visits[1])
+  const short = req.params.shortURL;
+  let urlDatabaseURL = urlDatabase[short].longURL;
   if (!userId) {
     userId = `anon${countOne()}`
     urlDatabase[short].visits[0] += 1;
     addVisitor(userId, urlDatabase, short)
-    console.log(userId)
+    console.log('this anon ran')
     res.redirect(urlDatabaseURL)
   } else if (urlDatabase[short]) 
   {
   urlDatabase[short].visits[0] += 1; //increase visits
   addVisitor(userId, urlDatabase, short)
-  console.log('should increase', urlDatabase[short].visits);
+  console.log('this known ran');
   res.redirect(urlDatabaseURL)
   } else 
   {

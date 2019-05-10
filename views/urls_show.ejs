@@ -14,7 +14,11 @@
     <h2> Your URL </h2>
     <p><a href=' /u/<%= shortURL %>'> <%= shortURL %> - <%= longURL %> </a></p>
     <p> Date created: <%= date %> </p>
-    <p> Number of Visits: <%= visits %> </p>
+    <% for (let key in visitObj) { %>
+    <ul>
+      <li> <%= key %> visited on <%= visitObj[key] %> </li>
+    </ul> <% }; %>
+    <p> Number of Visits: <%= visits[0] %>, Unique Visits: <%= uniqueVisits %>  </p>
     <form method='POST' action='/urls/<%= shortURL %>'>
       <label for='longURL'> URL: </label>
       <input type='text' id='longURL' name='newURL'  placeholder='http://...'>
