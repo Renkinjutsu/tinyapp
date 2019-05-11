@@ -314,17 +314,18 @@ app.get("/u/:shortURL", (req, res) =>
 {
   let userId = req.session.userId;
   console.log('why not work?', req.params)
-  let urlDatabaseURL = urlDatabase[req.params.shortURL].longURL;
+  const short = req.params.shortURL
+  let urlDatabaseURL = urlDatabase[short].longURL;
   if (!Object.keys(users).includes(userId)) {
     userId = `anon${countOne()}`
-    urlDatabase[req.params.shortURL].visits[0] += 1;
-    addVisitor(userId, req.params.shortURL)
+    urlDatabase[short].visits[0] += 1;
+    addVisitor(userId, short)
     req.session.userId = userId;
     res.redirect(urlDatabaseURL)
-  } else if (urlDatabase[req.params.shortURL]) 
+  } else if (urlDatabase[short]) 
   {
-  urlDatabase[req.params.shortURL].visits[0] += 1; //increase visits
-  addVisitor(userId, req.params.shortURL)
+  urlDatabase[short].visits[0] += 1; //increase visits
+  addVisitor(userId, short)
   res.redirect(urlDatabaseURL)
   } else 
   {

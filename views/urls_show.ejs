@@ -21,7 +21,7 @@
     <p> Number of Visits: <%= visits[0] %>, Unique Visits: <%= uniqueVisits %>  </p>
     <form method='POST' action='/urls/<%= shortURL %>'>
       <label for='longURL'> URL: </label>
-      <input type='text' id='longURL' name='newURL'  placeholder='http://...'>
+      <input type='url' id='longURL' name='newURL'  value='http://' />
       <button type='submit'> Edit URL </button>
     </form>
     <a href='/urls'> Back to index </a>
