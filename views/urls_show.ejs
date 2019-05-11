@@ -9,21 +9,21 @@
   <title>TinyApp</title>
 </head>
 <body style="font-size:20px; padding:50px;">
-<% include ./partials/_header %>
-    <!-- Add EJS code here -->
-    <h2> Your URL </h2>
-    <p><a href=' /u/<%= shortURL %>'> <%= shortURL %> - <%= longURL %> </a></p>
-    <p> Date created: <%= date %> </p>
-    <% for (let key in visitObj) { %>
-    <ul>
-      <li> <%= key %> visited on <%= visitObj[key] %> </li>
-    </ul> <% }; %>
-    <p> Number of Visits: <%= visits[0] %>, Unique Visits: <%= uniqueVisits %>  </p>
-    <form method='POST' action='/urls/<%= shortURL %>'>
-      <label for='longURL'> URL: </label>
-      <input type='url' id='longURL' name='newURL'  value='http://' />
-      <button type='submit'> Edit URL </button>
-    </form>
-    <a href='/urls'> Back to index </a>
+  <% include ./partials/_header %>
+  <!-- Add EJS code here -->
+  <h2> Your URL </h2>
+  <p><a href=' /u/<%= shortURL %>'> <%= shortURL %> - <%= longURL %> </a></p>
+  <p> Date created: <%= date %> </p>
+  <% for (let key in visitObj) { %>
+  <ul>
+    <li> <%= key %> visited on <%= visitObj[key] %> </li>
+  </ul> <% }; %>
+  <p> Number of Visits: <%= visits[0] %>, Unique Visits: <%= uniqueVisits %>  </p>
+  <form method='POST' action='/urls/<%= shortURL %>'>
+    <label for='longURL'> URL: </label>
+    <input type='url' id='longURL' name='newURL'  value='http://' />
+    <button type='submit'> Edit URL </button>
+  </form>
+  <a href='/urls'> Back to index </a>
 </body>
 </html> 

@@ -2,18 +2,18 @@
 <h1> Tiny app </h1>
 <% if (!user) { %> <!-- change to userid -->
 <h2>
-    <form method='GET' action='/login'>
-        <input type='submit' class='btn btn-primary' value='Login'>
-    </form>
-    <form method='GET' action='/register'>
-        <input type='submit' class='btn btn-primary' value='Register' />
-    </form>
+  <form method='GET' action='/login'>
+    <input type='submit' class='btn btn-primary' value='Login'>
+  </form>
+  <form method='GET' action='/register'>
+    <input type='submit' class='btn btn-primary' value='Register' />
+  </form>
 </h2>
 <% } else { %>
 <h2> Logged in as TinyApp User! </h2>
 <h3> <%= user.email %>
- <form method='POST' action='/logout'>
+  <form method='POST' action='/logout'>
     <input type='submit' class='btn btn-primary'  value='Logout' />
-</form>
+  </form>
 </h3>
 <% }; %>
