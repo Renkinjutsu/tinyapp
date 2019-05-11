@@ -13,9 +13,9 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 
 
-const users = 
+const users =
 {
-  'unique': 
+  'unique':
   {
     id: 'unique',
     email: 'test@test.com',
@@ -26,17 +26,17 @@ const urlDatabase =
 {
   "b2xVn2": 
   {
-    longURL: "http://www.lighthouselabs.ca", 
-    userId: 'unique', 
+    longURL: "http://www.lighthouselabs.ca",
+    userId: 'unique',
     date: new Date().toString(),
-    visits: [0, {'unique': new Date()}] 
+    visits: [0, {'unique': new Date()}]
   },
   "9sm5xK": 
   {
-    longURL: "http://www.google.com", 
-    userId: 'unique', 
+    longURL: "http://www.google.com",
+    userId: 'unique',
     date: new Date().toString(),
-    visits: [0, {'unique': new Date()}] 
+    visits: [0, {'unique': new Date()}]
   }
 };
 
@@ -45,8 +45,8 @@ const generateRandomString = function()
   let random = '';
   for (let i of [1,2,3,4,5,6]) 
   {
-    let num = Math.floor(Math.random() * 99999999)
-    let a = num.toString(36)
+    let num = Math.floor(Math.random() * 99999999);
+    let a = num.toString(36);
     random += a[1];
   }
   return random;
@@ -66,33 +66,30 @@ const returnId = function(email, password)
 
 const urlsForUser = function(id)
 {
-  const newDatabase = {}
+  const newDatabase = {};
   for (let short in urlDatabase) 
   {
     if (urlDatabase[short].userId === id) 
     {
-      newDatabase[short] = urlDatabase[short]
+      newDatabase[short] = urlDatabase[short];
     }
   }
   return newDatabase;
 } 
 
 // counting function
-let count = 0 
+let count = 0;
 const countOne = function() {
   return count++;
 }
 
 // looping function to add visitors to database
-const addVisitor = function(visitor, database, shortURL) 
+const addVisitor = function(visitor, shortURL) 
 {
-  let persons = urlDatabase[shortURL].visits[1]
-  let match = false
+  let persons = urlDatabase[shortURL].visits[1];
+  let match = false;
   for (let id in persons)
   {
-    console.log("this is the database: ", id)
-    console.log("this is the anon visitor: ", visitor)
-
     if (id === visitor)
     {
       match = true;
@@ -100,20 +97,19 @@ const addVisitor = function(visitor, database, shortURL)
   }
   if (!match) 
   {
-    urlDatabase[shortURL].visits[1][visitor] = new Date()
+    urlDatabase[shortURL].visits[1][visitor] = new Date();
   }
-  console.log(urlDatabase[shortURL].visits[1])
 }
 // ROOT page
 app.get('/', function(req, res) 
 {
-  console.log(req.session.userId)
-  if (req.session.userId) 
+  const userId = req.session.userId;
+  if (Object.keys(users).includes(userId)) 
   {
-    res.redirect('/urls')
+    res.redirect('/urls');
   } else 
   {
-    res.redirect('/login')
+    res.redirect('/login');
   }
 });
 // GUCCI
@@ -121,9 +117,10 @@ app.get('/', function(req, res)
 // LOGIN PAGE
 app.get('/login', (req,res) =>
 {
-  if (req.session.userId) 
+  const userId = req.session.userId;
+  if (Object.keys(users).includes(userId)) //cookies need to match database
   {
-    res.redirect('/urls')
+    res.redirect('/urls');
   } else 
   {
     res.render('login');
@@ -134,15 +131,13 @@ app.post('/login', (req, res) =>
   const user = req.body.email;
   const password = req.body.password;
   const uid = returnId(user, password);
-  console.log(returnId(user, password))
-  if (uid) 
+  if (uid) //requires login to work
   {
-    console.log(uid)
-    req.session.userId = uid
-    res.redirect('/urls')
+    req.session.userId = uid;
+    res.redirect('/urls');
   } else 
   {
-    res.redirect('/error')
+    res.redirect('/error');
   }
 })
 
@@ -150,21 +145,22 @@ app.post('/login', (req, res) =>
 app.post('/logout', (req, res) =>
 {
   req.session = null;
-  res.redirect('/urls')
+  res.redirect('/urls');
 })
 
 // Login Error page
 app.get('/error', (req, res) =>
 {
-  res.render('error')
-})
+  res.render('error');
+});
 
 // REGISTER page
 app.get('/register', (req, res) =>
 {
-  if (req.session.userId) 
+  const userId = req.session.userId;
+  if (Object.keys(users).includes(userId)) 
   {
-    res.redirect('/urls')
+    res.redirect('/urls');
   } else
   {
   res.render('register');
@@ -176,13 +172,12 @@ app.post('/register', (req, res) =>
   const user = req.body.email;
   const password = bcrypt.hashSync(req.body.password, 10);
   const uid = generateRandomString();
-  console.log(returnId(user, password))
   if (!user || !password) 
   {
-    res.redirect('/error')
+    res.redirect('/error');
   } else if (returnId(user, req.body.password)) 
   {
-    res.redirect('/login')
+    res.redirect('/login');
   } else 
   {
     users[uid] = 
@@ -192,7 +187,6 @@ app.post('/register', (req, res) =>
       password: password
     };
     req.session.userId = uid
-    console.log(users);
     res.redirect('/urls');
   }
 });
@@ -220,10 +214,10 @@ app.post('/urls', (req, res) =>
     {
       longURL: req.body.longURL,
       userId: userId,
-      date: new Date()
+      date: new Date(),
+      visits: [0, {}]
     }
   }
-  console.log(urlDatabase)
   res.redirect(`/urls/${newShortUrl}`)
 })
 
@@ -232,7 +226,7 @@ app.post('/urls', (req, res) =>
 app.get('/urls/new', (req, res) => 
 {
   const userId = req.session.userId;
-  if (!userId) 
+  if (!Object.keys(users).includes(userId)) 
   {
     res.redirect('/login');
   } else
@@ -255,6 +249,7 @@ app.post('/urls/:shortURL', (req, res) => {
   if (urlDatabase[id].userId === userId) 
   {
   urlDatabase[id].longURL = newLongURL; 
+  console.log(urlDatabase)
   res.redirect('/urls');
   } else
   {
@@ -266,8 +261,7 @@ app.post('/urls/:shortURL', (req, res) => {
 app.get("/urls/:shortURL", (req, res) => 
 {
   const userId = req.session.userId;
-  console.log('cookies?', req.session.json)
-  if (!userId) 
+  if (!Object.keys(users).includes(userId)) 
   {
     res.redirect('/error')
   } else
@@ -319,19 +313,18 @@ app.post('/urls/:shortURL/delete', (req, res) =>
 app.get("/u/:shortURL", (req, res) => 
 {
   let userId = req.session.userId;
-  const short = req.params.shortURL;
-  let urlDatabaseURL = urlDatabase[short].longURL;
-  if (!userId) {
+  console.log('why not work?', req.params)
+  let urlDatabaseURL = urlDatabase[req.params.shortURL].longURL;
+  if (!Object.keys(users).includes(userId)) {
     userId = `anon${countOne()}`
-    urlDatabase[short].visits[0] += 1;
-    addVisitor(userId, urlDatabase, short)
-    console.log('this anon ran')
+    urlDatabase[req.params.shortURL].visits[0] += 1;
+    addVisitor(userId, req.params.shortURL)
+    req.session.userId = userId;
     res.redirect(urlDatabaseURL)
-  } else if (urlDatabase[short]) 
+  } else if (urlDatabase[req.params.shortURL]) 
   {
-  urlDatabase[short].visits[0] += 1; //increase visits
-  addVisitor(userId, urlDatabase, short)
-  console.log('this known ran');
+  urlDatabase[req.params.shortURL].visits[0] += 1; //increase visits
+  addVisitor(userId, req.params.shortURL)
   res.redirect(urlDatabaseURL)
   } else 
   {

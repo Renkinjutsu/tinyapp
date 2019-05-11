@@ -17,7 +17,7 @@
     <a href='/urls/new'> New URL </a>
     <ul>
       <% for (let users in urls) { %>
-        <li><a href='#'> <%= users %> - <%= urls[users].longURL %> </a></li>
+        <li><a href='/urls/<%= users %>'> <%= users %> - <%= urls[users].longURL %> </a></li>
         <form method= "POST" action ="/urls/<%= users %>/delete">
           <input type='hidden' id='shortURL' name='shortURL' value = '<%= users %>' />
           <button type='submit'> delete </button>
