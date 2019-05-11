@@ -186,7 +186,7 @@ app.post('/register', (req, res) =>
       email: user,
       password: password
     };
-    req.session.userId = uid
+    req.session.userId = uid;
     res.redirect('/urls');
   }
 });
@@ -216,23 +216,23 @@ app.post('/urls', (req, res) =>
       userId: userId,
       date: new Date(),
       visits: [0, {}]
-    }
+    };
   }
-  res.redirect(`/urls/${newShortUrl}`)
+  res.redirect(`/urls/${newShortUrl}`);
 })
 
 
 // page to create NEW short url 
-app.get('/urls/new', (req, res) => 
+app.get('/urls/new', (req, res) =>
 {
   const userId = req.session.userId;
-  if (!Object.keys(users).includes(userId)) 
+  if (!Object.keys(users).includes(userId))
   {
     res.redirect('/login');
   } else
   {
     const userObj = users[userId];
-    let templateVars = 
+    let templateVars =
     { 
       user: userObj,
       urls: urlDatabase
@@ -246,14 +246,13 @@ app.post('/urls/:shortURL', (req, res) => {
   const userId = req.session.userId;
   const id = req.params.shortURL;
   const newLongURL = req.body.newURL;
-  if (urlDatabase[id].userId === userId) 
+  if (urlDatabase[id].userId === userId)
   {
-  urlDatabase[id].longURL = newLongURL; 
-  console.log(urlDatabase)
+  urlDatabase[id].longURL = newLongURL;
   res.redirect('/urls');
   } else
   {
-    res.redirect('/error')
+    res.redirect('/error');
   }
 });
 
@@ -263,12 +262,12 @@ app.get("/urls/:shortURL", (req, res) =>
   const userId = req.session.userId;
   if (!Object.keys(users).includes(userId)) 
   {
-    res.redirect('/error')
+    res.redirect('/error');
   } else
   {
-    const short = req.params.shortURL
-    const long = urlDatabase[req.params.shortURL].longURL
-    const date = urlDatabase[req.params.shortURL].date
+    const short = req.params.shortURL;
+    const long = urlDatabase[req.params.shortURL].longURL;
+    const date = urlDatabase[req.params.shortURL].date;
     const userObj = users[userId];
     let templateVars = 
     { 
@@ -280,15 +279,6 @@ app.get("/urls/:shortURL", (req, res) =>
       uniqueVisits: Object.keys(urlDatabase[short].visits[1]).length,
       visitObj: urlDatabase[short].visits[1]
     };
-
-    // logging visits
-    // access urldatabase visits
-    console.log(urlDatabase[short].visits);
-    
-    // log unique visit + date
-    console.log('true then false', req.session.views)
-
-    req.session.views = 'new';
     res.render("urls_show", templateVars);
   }
 });
@@ -297,14 +287,14 @@ app.get("/urls/:shortURL", (req, res) =>
 app.post('/urls/:shortURL/delete', (req, res) => 
 {
   const userId = req.session.userId;
-  const databaseKey = req.params.shortURL
+  const databaseKey = req.params.shortURL;
   if (urlDatabase[databaseKey].userId === userId) 
   {
-  delete urlDatabase[databaseKey]
-  res.redirect('/urls')
+  delete urlDatabase[databaseKey];
+  res.redirect('/urls');
   } else 
   {
-    res.redirect('/error')
+    res.redirect('/error');
   }
  
 });
@@ -313,30 +303,29 @@ app.post('/urls/:shortURL/delete', (req, res) =>
 app.get("/u/:shortURL", (req, res) => 
 {
   let userId = req.session.userId;
-  console.log('why not work?', req.params)
-  const short = req.params.shortURL
+  const short = req.params.shortURL;
   let urlDatabaseURL = urlDatabase[short].longURL;
   if (!Object.keys(users).includes(userId)) {
-    userId = `anon${countOne()}`
+    userId = `anon${countOne()}`;
     urlDatabase[short].visits[0] += 1;
-    addVisitor(userId, short)
+    addVisitor(userId, short);
     req.session.userId = userId;
-    res.redirect(urlDatabaseURL)
+    res.redirect(urlDatabaseURL);
   } else if (urlDatabase[short]) 
   {
   urlDatabase[short].visits[0] += 1; //increase visits
-  addVisitor(userId, short)
-  res.redirect(urlDatabaseURL)
+  addVisitor(userId, short);
+  res.redirect(urlDatabaseURL);
   } else 
   {
-    res.send('404: Link or page not found')
+    res.send('404: Link or page not found');
   }
 });
 
 // arbitrary page
 app.get('/:anythingelse', (req, res) =>
 {
-  res.redirect('/error')
+  res.redirect('/error');
 })
 
 app.listen(PORT, () => 
