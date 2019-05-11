@@ -21,7 +21,7 @@ const users =
     email: 'test@test.com',
     password: '$2b$10$fsNcpseHrq05MEMkKZxFxu8weqldggJoPuv4x4PAT76BmIh5VHBEK'
   }
-}
+};
 const urlDatabase = 
 {
   "b2xVn2": 
@@ -43,7 +43,7 @@ const urlDatabase =
 const generateRandomString = function() 
 {
   let random = '';
-  for (let i of [1,2,3,4,5,6]) 
+  for (let i = 0; i < 6; i++) 
   {
     let num = Math.floor(Math.random() * 99999999);
     let a = num.toString(36);
@@ -62,7 +62,7 @@ const returnId = function(email, password)
     } 
   }
   return false;
-}
+};
 
 const urlsForUser = function(id)
 {
@@ -75,13 +75,13 @@ const urlsForUser = function(id)
     }
   }
   return newDatabase;
-} 
+};
 
 // counting function
 let count = 0;
 const countOne = function() {
   return count++;
-}
+};
 
 // looping function to add visitors to database
 const addVisitor = function(visitor, shortURL) 
@@ -99,7 +99,7 @@ const addVisitor = function(visitor, shortURL)
   {
     urlDatabase[shortURL].visits[1][visitor] = new Date();
   }
-}
+};
 // ROOT page
 app.get('/', function(req, res) 
 {
@@ -125,7 +125,7 @@ app.get('/login', (req,res) =>
   {
     res.render('login');
   }
-})
+});
 app.post('/login', (req, res) =>
 {
   const user = req.body.email;
@@ -139,14 +139,14 @@ app.post('/login', (req, res) =>
   {
     res.redirect('/error');
   }
-})
+});
 
 // LOGOUT route
 app.post('/logout', (req, res) =>
 {
   req.session = null;
   res.redirect('/urls');
-})
+});
 
 // Login Error page
 app.get('/error', (req, res) =>
@@ -219,7 +219,7 @@ app.post('/urls', (req, res) =>
     };
   }
   res.redirect(`/urls/${newShortUrl}`);
-})
+});
 
 
 // page to create NEW short url 
