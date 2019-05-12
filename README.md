@@ -4,8 +4,8 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 ## Final Product
 
-!["Index page with all user's url links"](git@github.com:Renkinjutsu/tinyapp/docs/index-page.png)
-!["This page showcases an individual URL with the number of visits"] (git@github.com:Renkinjutsu/tinyapp/docs/show-page.png)
+!["Index page with all user's url links"](git@github.com:Renkinjutsu/tinyapp/master/docs/index-page.png)
+!["This page showcases an individual URL with the number of visits"](git@github.com:Renkinjutsu/tinyapp/docs/master/show-page.png)
 
 ## Dependencies
 
