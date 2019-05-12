@@ -1,6 +1,6 @@
 <!-- views/partials/header.ejs -->
 <h1> Tiny app </h1>
-<% if (!user) { %> <!-- change to userid -->
+<% if (!user) { %> <!-- check login status, give option to log in or register-->
 <h2>
   <form method='GET' action='/login'>
     <input type='submit' class='btn btn-primary' value='Login'>
@@ -9,7 +9,7 @@
     <input type='submit' class='btn btn-primary' value='Register' />
   </form>
 </h2>
-<% } else { %>
+<% } else { %> <!-- users logged in will have different header -->
 <h2> Logged in as TinyApp User! </h2>
 <h3> <%= user.email %>
   <form method='POST' action='/logout'>

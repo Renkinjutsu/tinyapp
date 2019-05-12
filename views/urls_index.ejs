@@ -10,19 +10,18 @@
 </head>
 <body style="font-size:20px; padding:50px;">
   <% include ./partials/_header %>
-  <!-- Add EJS code here -->
-  <% if (!user) { %>
+  <% if (!user) { %> <!-- ask user to login -->
   <h2> Please login </h2>
-  <% } else { %>
+  <% } else { %> <!-- main display for page -->
   <a href='/urls/new'> New URL </a>
   <ul>
-    <% for (let users in urls) { %>
+    <% for (let users in urls) { %> <!-- loop url database to display urls in list format -->
     <li><a href='/urls/<%= users %>'> <%= users %> - <%= urls[users].longURL %> </a></li>
-    <form method= "POST" action ="/urls/<%= users %>/delete">
+    <form method= "POST" action ="/urls/<%= users %>/delete"> <!-- delete button -->
       <input type='hidden' id='shortURL' name='shortURL' value = '<%= users %>' />
       <button type='submit'> delete </button>
     </form>
-    <form method= "GET" action ="/urls/<%= users %>">
+    <form method= "GET" action ="/urls/<%= users %>"> <!-- redirect to show page to edit -->
       <input type='hidden' id='shortURL' name='shortURL' value = '<%= users %>' />
       <button type='submit'> edit </button>
     </form>

@@ -12,7 +12,7 @@ app.use(cookieSession
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 
-
+// user database for account names, emails, passwords. Used for user authentication.
 const users =
 {
   'unique':
@@ -22,6 +22,10 @@ const users =
     password: '$2b$10$fsNcpseHrq05MEMkKZxFxu8weqldggJoPuv4x4PAT76BmIh5VHBEK'
   }
 };
+
+/* URL database, shortened urls as keys, called in index, show page, and url 
+redirections. Refer to when post to /urls/new 
+*/
 const urlDatabase = 
 {
   "b2xVn2": 
@@ -40,6 +44,7 @@ const urlDatabase =
   }
 };
 
+// function: create random Id keys for new accounts
 const generateRandomString = function() 
 {
   let random = '';
@@ -52,6 +57,7 @@ const generateRandomString = function()
   return random;
 }; 
 
+// function for logins, compare email and password to database using bcrypt
 const returnId = function(email, password)
 {
   for (let uid in users) 
@@ -64,6 +70,7 @@ const returnId = function(email, password)
   return false;
 };
 
+// function, filter url database for urls created by logged in user
 const urlsForUser = function(id)
 {
   const newDatabase = {};
@@ -77,13 +84,13 @@ const urlsForUser = function(id)
   return newDatabase;
 };
 
-// counting function
+// counting function append to anonymous user names
 let count = 0;
 const countOne = function() {
   return count++;
 };
 
-// looping function to add visitors to database
+// looping function, track unique visitors using /u/:shortURL to url database
 const addVisitor = function(visitor, shortURL) 
 {
   let persons = urlDatabase[shortURL].visits[1];
@@ -100,7 +107,7 @@ const addVisitor = function(visitor, shortURL)
     urlDatabase[shortURL].visits[1][visitor] = new Date();
   }
 };
-// ROOT page
+// ROOT page, redirect to index page or login page, depending on login status
 app.get('/', function(req, res) 
 {
   const userId = req.session.userId;
@@ -114,7 +121,7 @@ app.get('/', function(req, res)
 });
 // GUCCI
 
-// LOGIN PAGE
+// LOGIN PAGE, take email and password, page will post to /login
 app.get('/login', (req,res) =>
 {
   const userId = req.session.userId;
@@ -126,6 +133,8 @@ app.get('/login', (req,res) =>
     res.render('login');
   }
 });
+
+// receive login submission, pass to user database to authenticate, and give identifying cookie
 app.post('/login', (req, res) =>
 {
   const user = req.body.email;
@@ -141,20 +150,20 @@ app.post('/login', (req, res) =>
   }
 });
 
-// LOGOUT route
+// LOGOUT route from header
 app.post('/logout', (req, res) =>
 {
   req.session = null;
   res.redirect('/urls');
 });
 
-// Login Error page
+// Login Error page for unauthenticated users
 app.get('/error', (req, res) =>
 {
   res.render('error');
 });
 
-// REGISTER page
+// REGISTER page, check user database if user is logged in, then direct to page
 app.get('/register', (req, res) =>
 {
   const userId = req.session.userId;
@@ -167,6 +176,9 @@ app.get('/register', (req, res) =>
   }
 });
 
+/* submission from register page to generated hashed password, unique id and email to database
+and give cookie.
+*/
 app.post('/register', (req, res) =>
 {
   const user = req.body.email;
@@ -192,7 +204,7 @@ app.post('/register', (req, res) =>
 });
 
 
-// url INDEX
+// INDEX page, displays user urls otherwise ask user to login
 app.get('/urls', (req, res) => 
 {
   const userId = req.session.userId;
@@ -205,6 +217,7 @@ app.get('/urls', (req, res) =>
   res.render('urls_index', templateVars);
 });
 
+// post submission from url_new page, generate short url, date created and template for database 
 app.post('/urls', (req, res) => 
 {
   const newShortUrl = generateRandomString();
@@ -222,7 +235,7 @@ app.post('/urls', (req, res) =>
 });
 
 
-// page to create NEW short url 
+// NEW url page, authenticate user, create page to allow form submission
 app.get('/urls/new', (req, res) =>
 {
   const userId = req.session.userId;
@@ -241,12 +254,12 @@ app.get('/urls/new', (req, res) =>
   }
 });
 
-// url/shortURL EDIT from url show
+// post from EDIT button in show page, edit new long url to previous short url
 app.post('/urls/:shortURL', (req, res) => {
   const userId = req.session.userId;
   const id = req.params.shortURL;
   const newLongURL = req.body.newURL;
-  if (urlDatabase[id].userId === userId)
+  if (urlDatabase[id].userId === userId) //authenticate user
   {
   urlDatabase[id].longURL = newLongURL;
   res.redirect('/urls');
@@ -256,7 +269,7 @@ app.post('/urls/:shortURL', (req, res) => {
   }
 });
 
-// Render UNIQUE shorturl
+// Render show page for specific url, authenticate user, show visits, unique visits and time
 app.get("/urls/:shortURL", (req, res) => 
 {
   const userId = req.session.userId;
@@ -288,7 +301,7 @@ app.post('/urls/:shortURL/delete', (req, res) =>
 {
   const userId = req.session.userId;
   const databaseKey = req.params.shortURL;
-  if (urlDatabase[databaseKey].userId === userId) 
+  if (urlDatabase[databaseKey].userId === userId) //authenticate user
   {
   delete urlDatabase[databaseKey];
   res.redirect('/urls');
@@ -299,7 +312,7 @@ app.post('/urls/:shortURL/delete', (req, res) =>
  
 });
 
-// REDIRECT EXTERNAL url
+// redirect short urls to long url, any user may access link
 app.get("/u/:shortURL", (req, res) => 
 {
   let userId = req.session.userId;
@@ -307,13 +320,13 @@ app.get("/u/:shortURL", (req, res) =>
   let urlDatabaseURL = urlDatabase[short].longURL;
   if (!Object.keys(users).includes(userId)) {
     userId = `anon${countOne()}`;
-    urlDatabase[short].visits[0] += 1;
-    addVisitor(userId, short);
+    urlDatabase[short].visits[0] += 1; //log visits
+    addVisitor(userId, short); //log unique visit and user 
     req.session.userId = userId;
     res.redirect(urlDatabaseURL);
   } else if (urlDatabase[short]) 
   {
-  urlDatabase[short].visits[0] += 1; //increase visits
+  urlDatabase[short].visits[0] += 1;
   addVisitor(userId, short);
   res.redirect(urlDatabaseURL);
   } else 
@@ -322,7 +335,7 @@ app.get("/u/:shortURL", (req, res) =>
   }
 });
 
-// arbitrary page
+// error page to redirect user
 app.get('/:anythingelse', (req, res) =>
 {
   res.redirect('/error');

@@ -10,16 +10,15 @@
 </head>
 <body style="font-size:20px; padding:50px;">
   <% include ./partials/_header %>
-  <!-- Add EJS code here -->
   <h2> Your URL </h2>
-  <p><a href=' /u/<%= shortURL %>'> <%= shortURL %> - <%= longURL %> </a></p>
-  <p> Date created: <%= date %> </p>
-  <% for (let key in visitObj) { %>
+  <p><a href=' /u/<%= shortURL %>'> <%= shortURL %> - <%= longURL %> </a></p>   <!-- redirect to long url -->
+  <p> Date created: <%= date %> </p>   <!-- date when original linked created -->
+  <% for (let key in visitObj) { %>   <!-- loop unique visitors and date -->
   <ul>
     <li> <%= key %> visited on <%= visitObj[key] %> </li>
   </ul> <% }; %>
   <p> Number of Visits: <%= visits[0] %>, Unique Visits: <%= uniqueVisits %>  </p>
-  <form method='POST' action='/urls/<%= shortURL %>'>
+  <form method='POST' action='/urls/<%= shortURL %>'>   <!-- edit, new long url -->
     <label for='longURL'> URL: </label>
     <input type='url' id='longURL' name='newURL'  value='http://' />
     <button type='submit'> Edit URL </button>
