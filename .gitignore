@@ -6,3 +6,6 @@ node_modules
 
 #testing file
 test.js
+
+#pages used in initial template
+./views/pages
