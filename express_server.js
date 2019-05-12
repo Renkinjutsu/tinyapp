@@ -62,7 +62,7 @@ const returnId = function(email, password)
 {
   for (let uid in users) 
   {
-    if (users[uid].email === email && bcrypt.compareSync(password, users[uid].password))
+    if (users[uid].email === email && bcrypt.compareSync(password, users[uid].password)) //password check
     {
       return uid;
     } 
@@ -81,7 +81,7 @@ const urlsForUser = function(id)
       newDatabase[short] = urlDatabase[short];
     }
   }
-  return newDatabase;
+  return newDatabase; //new database only includes logged in user's urls
 };
 
 // counting function append to anonymous user names
@@ -102,16 +102,16 @@ const addVisitor = function(visitor, shortURL)
       match = true;
     }
   }
-  if (!match) 
+  if (!match) //unique visit
   {
-    urlDatabase[shortURL].visits[1][visitor] = new Date();
+    urlDatabase[shortURL].visits[1][visitor] = new Date(); //create object with user id and date
   }
 };
 // ROOT page, redirect to index page or login page, depending on login status
 app.get('/', function(req, res) 
 {
   const userId = req.session.userId;
-  if (Object.keys(users).includes(userId)) 
+  if (Object.keys(users).includes(userId)) //check user id against database
   {
     res.redirect('/urls');
   } else 
@@ -119,7 +119,6 @@ app.get('/', function(req, res)
     res.redirect('/login');
   }
 });
-// GUCCI
 
 // LOGIN PAGE, take email and password, page will post to /login
 app.get('/login', (req,res) =>
@@ -142,7 +141,7 @@ app.post('/login', (req, res) =>
   const uid = returnId(user, password);
   if (uid) //requires login to work
   {
-    req.session.userId = uid;
+    req.session.userId = uid; //issue cookie
     res.redirect('/urls');
   } else 
   {
@@ -153,7 +152,7 @@ app.post('/login', (req, res) =>
 // LOGOUT route from header
 app.post('/logout', (req, res) =>
 {
-  req.session = null;
+  req.session = null; //end cookie session
   res.redirect('/urls');
 });
 
@@ -167,7 +166,7 @@ app.get('/error', (req, res) =>
 app.get('/register', (req, res) =>
 {
   const userId = req.session.userId;
-  if (Object.keys(users).includes(userId)) 
+  if (Object.keys(users).includes(userId)) //check user id against database
   {
     res.redirect('/urls');
   } else
@@ -182,7 +181,7 @@ and give cookie.
 app.post('/register', (req, res) =>
 {
   const user = req.body.email;
-  const password = bcrypt.hashSync(req.body.password, 10);
+  const password = bcrypt.hashSync(req.body.password, 10); //password encrypt
   const uid = generateRandomString();
   if (!user || !password) 
   {
@@ -192,7 +191,7 @@ app.post('/register', (req, res) =>
     res.redirect('/login');
   } else 
   {
-    users[uid] = 
+    users[uid] = // user database object template
     {
       id: uid,
       email: user,
@@ -209,10 +208,10 @@ app.get('/urls', (req, res) =>
 {
   const userId = req.session.userId;
   const userObj = users[userId];
-  let templateVars = 
+  let templateVars = //variables fed to index page
   { 
     user: userObj,
-    urls: urlsForUser(userId)
+    urls: urlsForUser(userId) //filter function for urls belonging to user
   };
   res.render('urls_index', templateVars);
 });
@@ -223,7 +222,7 @@ app.post('/urls', (req, res) =>
   const newShortUrl = generateRandomString();
   const userId = req.session.userId;
   if (req.body) {
-    urlDatabase[newShortUrl] = 
+    urlDatabase[newShortUrl] = // url database object template
     {
       longURL: req.body.longURL,
       userId: userId,
@@ -245,7 +244,7 @@ app.get('/urls/new', (req, res) =>
   } else
   {
     const userObj = users[userId];
-    let templateVars =
+    let templateVars = //variables fed to new url page
     { 
       user: userObj,
       urls: urlDatabase
@@ -261,7 +260,7 @@ app.post('/urls/:shortURL', (req, res) => {
   const newLongURL = req.body.newURL;
   if (urlDatabase[id].userId === userId) //authenticate user
   {
-  urlDatabase[id].longURL = newLongURL;
+  urlDatabase[id].longURL = newLongURL; //edit old url
   res.redirect('/urls');
   } else
   {
@@ -282,19 +281,20 @@ app.get("/urls/:shortURL", (req, res) =>
     const long = urlDatabase[req.params.shortURL].longURL;
     const date = urlDatabase[req.params.shortURL].date;
     const userObj = users[userId];
-    let templateVars = 
+    let templateVars = //variables fed to show page
     { 
       user: userObj,
       shortURL: short,
       longURL: long,
       date: date.toString(),
       visits:  urlDatabase[short].visits,
-      uniqueVisits: Object.keys(urlDatabase[short].visits[1]).length,
+      uniqueVisits: Object.keys(urlDatabase[short].visits[1]).length, //count number of users in array
       visitObj: urlDatabase[short].visits[1]
     };
     res.render("urls_show", templateVars);
   }
 });
+// GUCCI
 
 // Deleting url route
 app.post('/urls/:shortURL/delete', (req, res) => 
@@ -319,14 +319,14 @@ app.get("/u/:shortURL", (req, res) =>
   const short = req.params.shortURL;
   let urlDatabaseURL = urlDatabase[short].longURL;
   if (!Object.keys(users).includes(userId)) {
-    userId = `anon${countOne()}`;
+    userId = `anon${countOne()}`; //generate anonymous id
     urlDatabase[short].visits[0] += 1; //log visits
     addVisitor(userId, short); //log unique visit and user 
-    req.session.userId = userId;
+    req.session.userId = userId; //issue cookie to user
     res.redirect(urlDatabaseURL);
   } else if (urlDatabase[short]) 
   {
-  urlDatabase[short].visits[0] += 1;
+  urlDatabase[short].visits[0] += 1; 
   addVisitor(userId, short);
   res.redirect(urlDatabaseURL);
   } else 
